@@ -133,9 +133,7 @@ namespace FitsAnalyse {
 
         public string ReadNoiseSummary {
             get {
-                // l'ancienne mesure du profil n'a pas de caméra : on ne s'en sert que pour une image sans nom de caméra,
-            // pour ne jamais appliquer le bruit de lecture d'une caméra à une autre
-            if (ReadNoiseAdu > 0 && string.IsNullOrWhiteSpace(camera)) {
+                if (ReadNoiseAdu > 0) {
                     var s = $"Bruit de lecture mesuré : {ReadNoiseAdu:0.0} ADU, bias à {BiasLevel:0} ADU";
                     return string.IsNullOrWhiteSpace(BiasInfo) ? s : $"{s}\n{BiasInfo}";
                 }
@@ -223,7 +221,9 @@ namespace FitsAnalyse {
                     Description = $"bias : {e.Label} (offset différent de l'image : bruit de lecture repris, niveau du bias inconnu)"
                 };
             }
-            if (ReadNoiseAdu > 0) {
+            // l'ancienne mesure du profil n'a pas de caméra : on ne s'en sert que pour une image sans nom de caméra,
+            // pour ne jamais appliquer le bruit de lecture d'une caméra à une autre
+            if (ReadNoiseAdu > 0 && string.IsNullOrWhiteSpace(camera)) {
                 return new BiasResolution { ReadNoise = ReadNoiseAdu, BiasLevel = BiasLevel, Description = "bias : ancienne mesure du profil, non associée à une caméra" };
             }
             double rn = ReadNoiseElectrons, g = GainElectronsPerAdu;
