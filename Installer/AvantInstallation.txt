@@ -1,0 +1,14 @@
+﻿FitsAnalyse – statistiques, histogramme et temps de pose conseillé pour NINA 3.2
+
+FitsAnalyse sera installé dans le dossier des plugins de NINA :
+%LOCALAPPDATA%\NINA\Plugins\3.0.0\FitsAnalyse
+
+NINA doit être fermé pendant l'installation.
+
+Après l'installation :
+1. Lance NINA, onglet Imagerie : ouvre le panneau « FitsAnalyse » (tu peux fermer le panneau Statistiques, FitsAnalyse en reprend les valeurs).
+2. Dans Options > Plugins > FitsAnalyse, clique sur « Mesurer sur un ou deux bias… » et choisis un ou deux bias
+   pris avec les mêmes gain, offset et mode de lecture que tes images.
+3. Prends une pose : le temps de pose conseillé s'affiche sous les statistiques.
+
+Désinstallation : Paramètres Windows > Applications > FitsAnalyse (plugin NINA), NINA fermé.

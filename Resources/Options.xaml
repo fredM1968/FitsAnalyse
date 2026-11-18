@@ -1,0 +1,93 @@
+<ResourceDictionary
+    x:Class="FitsAnalyse.Resources.Options"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <BooleanToVisibilityConverter x:Key="FA_OptBoolToVis" />
+
+    <!--  NINA cherche le modèle "<Nom du plugin>_Options" ; le DataContext est l'instance de FitsAnalysePlugin  -->
+    <DataTemplate x:Key="FitsAnalyse_Options">
+        <StackPanel Margin="5" Orientation="Vertical">
+
+            <TextBlock Margin="0,0,0,6" FontWeight="Bold" Text="Mesures de bias par caméra" />
+            <TextBlock
+                MaxWidth="700"
+                HorizontalAlignment="Left"
+                Opacity="0.75"
+                Text="Le temps de pose conseillé compare le bruit du fond de ciel au bruit de lecture, mesuré sur un ou deux bias (deux bias donnent la mesure la plus juste). Chaque mesure est rangée sous la caméra, le gain, l'offset et le binning lus dans l'en-tête du bias ; chaque image utilise automatiquement la mesure de sa caméra. Ces mesures sont communes à tous les profils NINA."
+                TextWrapping="Wrap" />
+
+            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                <Button Padding="10,2" Command="{Binding MeasureBiasCommand}" Content="Mesurer sur un ou deux bias…" />
+            </StackPanel>
+            <TextBlock Margin="0,4,0,0" Text="{Binding BiasStatus}" TextWrapping="Wrap" />
+
+            <!--  Liste des mesures  -->
+            <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding BiasEntries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Margin="0,0,8,0"
+                                Padding="6,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding DataContext.DeleteBiasEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}"
+                                Content="Supprimer"
+                                ToolTip="Supprimer cette mesure" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock FontWeight="SemiBold" Text="{Binding Label}" />
+                                <TextBlock Opacity="0.7" Text="{Binding Summary}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Margin="0,4,0,0" Opacity="0.5" Text="{Binding LibraryPath, StringFormat='Fichier : {0}'}" TextWrapping="Wrap" />
+
+            <!--  Ancienne mesure unique (versions 1.0 à 1.3)  -->
+            <StackPanel Margin="0,8,0,0" Orientation="Horizontal" Visibility="{Binding HasLegacyBias, Converter={StaticResource FA_OptBoolToVis}}">
+                <TextBlock VerticalAlignment="Center" Opacity="0.75" Text="Ancienne mesure du profil, sans caméra (utilisée seulement pour les images sans nom de caméra) : " />
+                <TextBlock VerticalAlignment="Center" Text="{Binding ReadNoiseAdu, StringFormat={}{0:0.0} ADU}" />
+                <Button Margin="8,0,0,0" Padding="6,0" Command="{Binding ClearBiasCommand}" Content="Effacer" />
+            </StackPanel>
+
+            <TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Calcul du temps de pose" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" Text="Rapport ciel / lecture visé (k) :" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="6,3" Text="{Binding TargetK, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Margin="6,3" VerticalAlignment="Center" Opacity="0.6" Text="10 ≈ +5 % de bruit dû à la lecture ; 5 ≈ +10 % ; 20 ≈ +2,5 %" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" Text="Paliers de la bibliothèque de darks (s) :" />
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" MinWidth="240" MaxWidth="360" Margin="6,3" HorizontalAlignment="Left"
+                         Text="{Binding DarkSteps, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" Text="Sans mesure : bruit de lecture (e-) :" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="6,3" Text="{Binding ReadNoiseElectrons, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Margin="6,3" VerticalAlignment="Center" Opacity="0.6" Text="courbe du fabricant, au gain utilisé (dernier recours, toutes caméras)" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" Text="Sans mesure : gain (e-/ADU du fichier) :" />
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="6,3" Text="{Binding GainElectronsPerAdu, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <TextBlock Grid.Row="3" Grid.Column="2" Margin="6,3" VerticalAlignment="Center" Opacity="0.6" Text="capteur 12 bits : gain du fabricant ÷ 16 ; 14 bits : ÷ 4" />
+            </Grid>
+            <TextBlock Margin="0,4,0,0" Opacity="0.6" Text="La suggestion est arrondie au palier le plus proche, pour réutiliser les darks existants." TextWrapping="Wrap" />
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

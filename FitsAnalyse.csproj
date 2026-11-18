@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NINA 3.2 tourne sous .NET 8 -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <RootNamespace>FitsAnalyse</RootNamespace>
+    <AssemblyName>FitsAnalyse</AssemblyName>
+    <!-- Les métadonnées du plugin sont dans Properties\AssemblyInfo.cs -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Même version que Planitario -->
+    <PackageReference Include="NINA.Plugin" Version="3.2.0.9001">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Copie automatique de la DLL dans le dossier des plugins NINA après compilation -->
+  <Target Name="CopyToNinaPlugins" AfterTargets="Build">
+    <PropertyGroup>
+      <NinaPluginDir>$(LOCALAPPDATA)\NINA\Plugins\3.0.0\FitsAnalyse</NinaPluginDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(NinaPluginDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(NinaPluginDir)" />
+  </Target>
+</Project>

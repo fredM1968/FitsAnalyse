@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NINA": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\NINA\\N.I.N.A. - 3.1\\NINA.exe"
+    }
+  }
+}
